@@ -52,15 +52,17 @@
 
   <div id="game-app" class="w-full max-w-3xl aspect-[4/3] relative overflow-hidden bg-[#87CEEB] rounded-xl shadow-2xl select-none">
     
-    <div class="absolute bottom-16 left-0 right-0 h-40 flex items-end opacity-90">
+    <!-- 背景の装飾 -->
+    <div class="absolute bottom-16 left-0 right-0 h-40 flex items-end opacity-90 pointer-events-none">
       <div class="w-1/3 h-24 bg-green-500 rounded-t-[100px] -ml-8"></div>
       <div class="w-1/2 h-32 bg-[#32CD32] rounded-t-[150px] -ml-16"></div>
       <div class="w-1/3 h-28 bg-green-500 rounded-t-[120px] -ml-16"></div>
       <div class="w-1/2 h-40 bg-[#32CD32] rounded-t-[180px] -ml-12"></div>
       <div class="w-1/3 h-24 bg-green-500 rounded-t-[100px] -ml-16 mr-[-50px]"></div>
     </div>
-    <div class="absolute bottom-0 left-0 right-0 h-16 bg-[#8B4513] border-t-[12px] border-[#654321]"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-16 bg-[#8B4513] border-t-[12px] border-[#654321] pointer-events-none"></div>
 
+    <!-- 左上: ステージとポイント -->
     <div class="absolute top-4 left-4 flex flex-col gap-2 z-30">
       <div class="bg-white px-2 py-1 flex items-center gap-2 rounded shadow-sm border border-gray-200">
         <span class="text-gray-500 text-sm font-bold">ステージ</span>
@@ -71,11 +73,22 @@
         <span id="ui-points" class="bg-orange-400 text-white font-bold px-3 py-0.5 rounded shadow-inner min-w-[3rem] text-center transition-colors">1000</span>
       </div>
     </div>
+
+    <!-- 右上: スコア -->
     <div class="absolute top-4 right-4 bg-white px-3 py-1 flex flex-col items-center rounded shadow-sm border border-gray-200 z-30">
       <span class="text-gray-500 text-sm font-bold">現在のスコア</span>
       <span id="ui-score" class="bg-orange-400 text-white font-bold px-4 py-0.5 rounded shadow-inner mt-1 min-w-[5rem] text-center text-lg">0</span>
     </div>
 
+    <!-- 新規: 右上 やり直すボタン (プレイ中のみ表示) -->
+    <div id="btn-retry-container" class="absolute top-24 right-4 z-30 hidden">
+      <button onclick="showRetryModal()" class="bg-gray-600 hover:bg-gray-500 text-white text-sm font-bold py-2 px-3 rounded-lg shadow-[0_4px_0_#374151] active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-1 border border-gray-700">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        やり直す
+      </button>
+    </div>
+
+    <!-- 左下: 猫と吹き出し -->
     <div class="absolute left-[2%] bottom-[35%] z-20 scale-100 origin-bottom-left">
       <svg id="cat-svg" width="100" height="120" viewBox="0 0 120 150">
         <path d="M 20 100 Q 0 120 10 140 Q 20 150 30 130 Q 40 110 30 90" fill="#FF8C00" stroke="#000" stroke-width="2"/>
@@ -107,6 +120,7 @@
       </div>
     </div>
 
+    <!-- プロンプト（お題） -->
     <div id="prompt-container" class="absolute top-[20%] w-full flex flex-col justify-center items-center z-20 pointer-events-none hidden">
       <div id="prompt-box" class="bg-white border-4 border-gray-300 rounded-[2rem] shadow-[0_8px_0_rgba(0,0,0,0.1)] px-12 py-6 text-center transform transition-transform duration-300 origin-bottom">
          <div id="prompt-sub" class="text-gray-500 font-bold mb-2 text-base md:text-lg">この音はどこ？</div>
@@ -118,6 +132,7 @@
       +0
     </div>
 
+    <!-- 鍵盤エリア -->
     <div id="keyboard-container" class="absolute bottom-[5%] left-[2%] right-[2%] h-[35%] z-10 hidden flex justify-center items-end">
       <svg id="keyboard-svg" width="100%" height="100%" viewBox="0 0 500 200" preserveAspectRatio="xMidYMid meet" class="overflow-visible drop-shadow-2xl">
         <g id="keyboard-g"></g>
@@ -125,8 +140,15 @@
       </svg>
     </div>
 
-    <div id="overlay-title" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#a6e6ff] overflow-y-auto pt-20 pb-10">
+    <!-- タイトル画面 / ステージ選択画面 -->
+    <div id="overlay-title" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#a6e6ff] overflow-y-auto pt-20 pb-10">
       
+      <!-- 名前の表示 -->
+      <div id="player-name-display" class="absolute top-4 right-4 bg-white/90 px-5 py-2 rounded-full shadow-md border-2 border-blue-300 text-blue-800 font-bold hidden z-50 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+        <span id="ui-player-name"></span> さん
+      </div>
+
       <div class="flex items-center justify-center gap-2 mb-10 shrink-0 mt-8">
         <div class="transform -rotate-6 animate-bounce">
           <svg width="80" height="96" viewBox="0 0 120 150">
@@ -171,32 +193,69 @@
 
       <div id="stage-select-range" class="w-full max-w-lg hidden flex-col items-center px-4 pb-10 shrink-0">
         <h3 class="text-2xl font-bold text-blue-800 mb-6 bg-white/90 px-6 py-2 rounded-full shadow-sm border-2 border-blue-200">音域モード</h3>
-        <div id="stage-btns-range" class="grid grid-cols-2 gap-3 w-full mb-8">
-          </div>
+        <div id="stage-btns-range" class="grid grid-cols-2 gap-3 w-full mb-8"></div>
         <button onclick="showTitleScreen()" class="py-3 px-8 bg-gray-500 hover:bg-gray-400 text-white text-xl font-bold rounded-full shadow-[0_4px_0_#374151] active:translate-y-[4px] active:shadow-none transition-all">タイトルへ戻る</button>
       </div>
 
       <div id="stage-select-challenge" class="w-full max-w-xl hidden flex-col items-center px-4 pb-10 shrink-0">
         <h3 class="text-2xl font-bold text-orange-800 mb-6 bg-white/90 px-6 py-2 rounded-full shadow-sm border-2 border-orange-200">チャレンジモード</h3>
-        <div id="stage-btns-challenge" class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full mb-8">
-          </div>
+        <div id="stage-btns-challenge" class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full mb-8"></div>
         <button onclick="showTitleScreen()" class="py-3 px-8 bg-gray-500 hover:bg-gray-400 text-white text-xl font-bold rounded-full shadow-[0_4px_0_#374151] active:translate-y-[4px] active:shadow-none transition-all">タイトルへ戻る</button>
       </div>
+
+      <!-- データリセットボタン -->
+      <button id="btn-data-reset" onclick="showResetModal()" class="absolute bottom-4 right-4 text-blue-800/40 hover:text-red-500 text-xs font-bold transition-colors z-50 hidden underline underline-offset-2">データリセット</button>
     </div>
 
-    <div id="overlay-result" class="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-hidden hidden">
+    <!-- リザルト画面 -->
+    <div id="overlay-result" class="absolute inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm overflow-hidden hidden">
       <div id="confetti-container" class="absolute inset-0 pointer-events-none z-0 hidden"></div>
-      <div id="result-content" class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-md w-full border-4 border-blue-400 transform transition-all relative z-10 mx-4">
-        </div>
+      <div id="result-content" class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-md w-full border-4 border-blue-400 transform transition-all relative z-10 mx-4"></div>
     </div>
 
-    <div id="overlay-allclear" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#fff0f5] hidden overflow-hidden">
+    <!-- 全クリア画面 -->
+    <div id="overlay-allclear" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#fff0f5] hidden overflow-hidden">
        <div id="allclear-confetti" class="absolute inset-0 pointer-events-none z-0"></div>
        <div class="text-5xl md:text-6xl font-black text-pink-500 mb-8 animate-bounce drop-shadow-md z-10 text-center">完全クリア！！</div>
        <div class="text-2xl font-bold text-gray-800 mb-10 z-10 bg-white/80 px-6 py-3 rounded-full shadow-sm">あなたは真の音符マスターです！</div>
        <button class="py-4 px-12 bg-pink-500 hover:bg-pink-400 text-white text-2xl font-bold rounded-full shadow-[0_6px_0_#be185d] active:translate-y-[6px] active:shadow-none transition-all z-10" onclick="showTitleScreen()">
           タイトルへ戻る
         </button>
+    </div>
+
+    <!-- ========= モーダル群 (最前面 z-50) ========= -->
+
+    <!-- 名前入力モーダル -->
+    <div id="overlay-name-input" class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-blue-400 mx-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">おなまえを おしえてね！</h2>
+        <input type="text" id="player-name-input" class="w-full text-center text-2xl p-3 border-2 border-gray-300 rounded-xl mb-6 focus:outline-none focus:border-blue-500" placeholder="なまえ" maxlength="10">
+        <button onclick="savePlayerName()" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold rounded-xl shadow-[0_4px_0_#1d4ed8] active:translate-y-[4px] active:shadow-none transition-all">けってい！</button>
+      </div>
+    </div>
+
+    <!-- データリセット確認モーダル -->
+    <div id="overlay-reset-confirm" class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+      <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-red-500 mx-4">
+        <h2 class="text-2xl font-bold text-red-600 mb-4">ほんとうに データをけす？</h2>
+        <p class="text-gray-600 mb-6 font-bold">なまえも スコアも<br/>ぜんぶ きえちゃうよ！</p>
+        <div class="flex gap-4">
+          <button onclick="hideResetModal()" class="flex-1 py-3 bg-gray-400 hover:bg-gray-500 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#4b5563] active:translate-y-[4px] active:shadow-none transition-all">やめる</button>
+          <button onclick="resetData()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#991b1b] active:translate-y-[4px] active:shadow-none transition-all">けす</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- やり直す確認モーダル -->
+    <div id="overlay-retry-modal" class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+      <div class="bg-white p-6 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-gray-400 mx-4">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">どうする？</h2>
+        <div class="flex flex-col gap-3">
+          <button onclick="retryGame()" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#1d4ed8] active:translate-y-[4px] active:shadow-none transition-all">もう一度最初からプレイする</button>
+          <button onclick="returnToStageSelect()" class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#c2410c] active:translate-y-[4px] active:shadow-none transition-all">ステージ選択画面に戻る</button>
+          <button onclick="hideRetryModal()" class="w-full py-3 mt-2 bg-gray-400 hover:bg-gray-500 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#4b5563] active:translate-y-[4px] active:shadow-none transition-all">キャンセル</button>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -253,6 +312,8 @@
     };
 
     const state = {
+      playerName: null,
+      pendingMode: null,
       mode: 'range',
       stage: 1,
       gameState: 'title',
@@ -265,7 +326,10 @@
       questionList: [],
       startTime: null,
       maxUnlockedChallenge: 1,
-      keyboardPattern: 1
+      keyboardPattern: 1,
+      highScores: {},
+      isPaused: false,
+      pauseTime: null
     };
 
     let audioCtx = null;
@@ -273,37 +337,162 @@
     let rAF_TimerId = null;
 
     // === セーブデータ管理 ===
+    const SAVE_KEY = 'oto_to_key_save_xT9v2KkL5p'; 
+
     function loadProgress() {
       try {
-        const saved = localStorage.getItem('oto-to-key-progress');
+        const saved = localStorage.getItem(SAVE_KEY);
         if (saved) {
-          state.maxUnlockedChallenge = parseInt(saved, 10);
+          const data = JSON.parse(saved);
+          if (data.playerName) state.playerName = data.playerName;
+          if (data.maxUnlockedChallenge) state.maxUnlockedChallenge = data.maxUnlockedChallenge;
+          if (data.highScores) state.highScores = data.highScores;
+        } else {
+          // 旧バージョンのデータ引き継ぎ
+          const oldSaved = localStorage.getItem('oto-to-key-progress');
+          if (oldSaved) {
+            state.maxUnlockedChallenge = parseInt(oldSaved, 10);
+          }
         }
       } catch (e) {
         console.warn("セーブデータの読み込みに失敗しました", e);
       }
     }
 
-    function saveProgress(unlockedStage) {
-      if (unlockedStage > state.maxUnlockedChallenge && unlockedStage <= 12) {
-        state.maxUnlockedChallenge = unlockedStage;
-        try {
-          localStorage.setItem('oto-to-key-progress', state.maxUnlockedChallenge.toString());
-        } catch (e) {
-          console.warn("セーブデータの保存に失敗しました", e);
-        }
+    function saveFullProgress() {
+      const dataToSave = {
+        playerName: state.playerName,
+        maxUnlockedChallenge: state.maxUnlockedChallenge,
+        highScores: state.highScores
+      };
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
+      } catch (e) {
+        console.warn("セーブデータの保存に失敗しました", e);
       }
     }
 
-    // === 初期化とタイトル画面 ===
+    function saveProgress(mode, stage, score) {
+      let shouldSave = false;
+
+      // ハイスコアの更新
+      const key = `${mode}_${stage}`;
+      const currentHigh = state.highScores[key] || 0;
+      if (score > currentHigh) {
+        state.highScores[key] = score;
+        shouldSave = true;
+      }
+
+      // チャレンジモードで8000点以上なら次のステージをアンロック
+      if (mode === 'challenge' && score >= 8000) {
+        const nextStage = stage + 1;
+        if (nextStage > state.maxUnlockedChallenge && nextStage <= 12) {
+          state.maxUnlockedChallenge = nextStage;
+          shouldSave = true;
+        }
+      }
+
+      if (shouldSave) {
+        saveFullProgress();
+      }
+    }
+
+    // === 初期化・名前入力・リセット ===
+
+    window.onload = () => {
+      loadProgress();
+      initStageSelectUI();
+      showTitleScreen();
+
+      if (state.playerName) {
+        updateNameDisplay();
+      }
+    };
+
+    function showNameInput() {
+      document.getElementById('overlay-name-input').classList.remove('hidden');
+      const input = document.getElementById('player-name-input');
+      input.value = '';
+      input.focus();
+      
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') savePlayerName();
+      };
+    }
+
+    window.savePlayerName = function() {
+      const input = document.getElementById('player-name-input');
+      const name = input.value.trim();
+      if (name) {
+        state.playerName = name;
+        saveFullProgress();
+        document.getElementById('overlay-name-input').classList.add('hidden');
+        updateNameDisplay();
+        
+        if (state.pendingMode) {
+          const modeToOpen = state.pendingMode;
+          state.pendingMode = null;
+          showStageSelect(modeToOpen);
+        }
+      } else {
+        input.classList.add('animate-shakePrompt');
+        setTimeout(() => input.classList.remove('animate-shakePrompt'), 500);
+      }
+    }
+
+    function updateNameDisplay() {
+      if (state.playerName) {
+        document.getElementById('ui-player-name').innerText = state.playerName;
+        document.getElementById('player-name-display').classList.remove('hidden');
+        document.getElementById('btn-data-reset').classList.remove('hidden');
+      } else {
+        document.getElementById('player-name-display').classList.add('hidden');
+        document.getElementById('btn-data-reset').classList.add('hidden');
+      }
+    }
+
+    window.showResetModal = function() {
+      document.getElementById('overlay-reset-confirm').classList.remove('hidden');
+    }
+
+    window.hideResetModal = function() {
+      document.getElementById('overlay-reset-confirm').classList.add('hidden');
+    }
+
+    window.resetData = function() {
+      localStorage.removeItem(SAVE_KEY);
+      state.playerName = null;
+      state.maxUnlockedChallenge = 1;
+      state.highScores = {};
+      
+      hideResetModal();
+      updateNameDisplay();
+      showTitleScreen(); // リセット後はタイトル画面に戻る（名前はすぐには聞かない）
+    }
+
+    // === UI構築関連 ===
+
+    function getClearMark(mode, stage) {
+      const key = `${mode}_${stage}`;
+      const score = state.highScores[key] || 0;
+      if (score >= 9000) {
+        return `<div class="absolute -top-4 -right-4 w-10 h-10 text-yellow-500 font-black text-4xl flex items-center justify-center drop-shadow-md transform rotate-12 z-10 pointer-events-none">◎</div>`;
+      } else if (score >= 8000) {
+        return `<div class="absolute -top-4 -right-4 w-10 h-10 text-red-500 font-black text-4xl flex items-center justify-center drop-shadow-md transform -rotate-12 z-10 pointer-events-none">〇</div>`;
+      }
+      return '';
+    }
+
     function initStageSelectUI() {
       const rangeContainer = document.getElementById('stage-btns-range');
       let rangeHtml = '';
       for (let i = 1; i <= 5; i++) {
         const label = RANGE_STAGES[i-1].map(id => ALL_NOTES[id].label).join('・');
         const textClass = label.length > 20 ? "text-[10px]" : "text-xs";
+        const mark = getClearMark('range', i);
         rangeHtml += `
-          <button onclick="startGame('range', ${i})" class="bg-white hover:bg-blue-50 text-blue-600 rounded-xl shadow-[0_4px_0_#93c5fd] border-2 border-blue-200 active:translate-y-[4px] active:shadow-none transition-all flex flex-col items-center justify-center py-2 px-1">
+          <button onclick="startGame('range', ${i})" class="relative bg-white hover:bg-blue-50 text-blue-600 rounded-xl shadow-[0_4px_0_#93c5fd] border-2 border-blue-200 active:translate-y-[4px] active:shadow-none transition-all flex flex-col items-center justify-center py-2 px-1">
+            ${mark}
             <span class="text-lg font-bold">ステージ ${i}</span>
             <span class="${textClass} text-gray-500 mt-1 break-words text-center px-1 leading-tight">${label}</span>
           </button>
@@ -316,17 +505,19 @@
       for (let i = 1; i <= 12; i++) {
         const label = CHALLENGE_STAGES[i-1].map(id => ALL_NOTES[id].label).join('・');
         const textClass = label.length > 25 ? "text-[9px]" : label.length > 15 ? "text-[10px]" : "text-xs";
+        const mark = getClearMark('challenge', i);
         
         if (i <= state.maxUnlockedChallenge) {
           challengeHtml += `
-            <button onclick="startGame('challenge', ${i})" class="bg-white hover:bg-orange-50 text-orange-600 rounded-xl shadow-[0_4px_0_#fdba74] border-2 border-orange-200 active:translate-y-[4px] active:shadow-none transition-all flex flex-col items-center justify-center py-2 px-1 overflow-hidden">
+            <button onclick="startGame('challenge', ${i})" class="relative bg-white hover:bg-orange-50 text-orange-600 rounded-xl shadow-[0_4px_0_#fdba74] border-2 border-orange-200 active:translate-y-[4px] active:shadow-none transition-all flex flex-col items-center justify-center py-2 px-1 overflow-hidden">
+              ${mark}
               <span class="text-base font-bold">Ch. ${i}</span>
               <span class="${textClass} text-gray-500 mt-1 break-words text-center leading-tight px-1">${label}</span>
             </button>
           `;
         } else {
           challengeHtml += `
-            <div class="bg-gray-200 text-gray-400 rounded-xl border-2 border-gray-300 flex flex-col items-center justify-center py-2 px-1 overflow-hidden opacity-80 cursor-not-allowed">
+            <div class="relative bg-gray-200 text-gray-400 rounded-xl border-2 border-gray-300 flex flex-col items-center justify-center py-2 px-1 overflow-hidden opacity-80 cursor-not-allowed">
               <span class="text-base font-bold">🔒 Ch. ${i}</span>
               <span class="${textClass} mt-1 break-all text-center leading-tight px-1">クリアで解放</span>
             </div>
@@ -341,20 +532,28 @@
       stopBGM();
       
       initStageSelectUI();
-
       document.getElementById('overlay-title').classList.remove('hidden');
       document.getElementById('mode-select').classList.remove('hidden');
       document.getElementById('stage-select-range').classList.add('hidden');
       document.getElementById('stage-select-challenge').classList.add('hidden');
-
       document.getElementById('overlay-result').classList.add('hidden');
       document.getElementById('overlay-allclear').classList.add('hidden');
       document.getElementById('keyboard-container').classList.add('hidden');
       document.getElementById('prompt-container').classList.add('hidden');
+      
+      // やり直すボタンは隠す
+      document.getElementById('btn-retry-container').classList.add('hidden');
+
       setCatMessage('音名⇒鍵盤クイズだよ！\nモードをえらんでね！');
     }
 
     window.showStageSelect = function(mode) {
+      if (!state.playerName) {
+        state.pendingMode = mode;
+        showNameInput();
+        return;
+      }
+
       document.getElementById('mode-select').classList.add('hidden');
       if (mode === 'range') {
         document.getElementById('stage-select-range').classList.remove('hidden');
@@ -364,12 +563,6 @@
         document.getElementById('stage-select-range').classList.add('hidden');
       }
     }
-
-    window.onload = () => {
-      loadProgress();
-      initStageSelectUI();
-      showTitleScreen();
-    };
 
     // === オーディオ関連 ===
     function initAudio() {
@@ -574,11 +767,9 @@
         const keyRect = keyEl.getBoundingClientRect();
         const appRect = document.getElementById('game-app').getBoundingClientRect();
         
-        // 鍵盤の少し右上に配置
         let left = keyRect.right - appRect.left + 5; 
         let top = keyRect.top - appRect.top - 20;
         
-        // 画面右端ではみ出さないよう調整
         if (left + 80 > appRect.width) {
           left = keyRect.left - appRect.left - 80;
         }
@@ -586,12 +777,11 @@
         el.style.left = `${left}px`;
         el.style.top = `${top}px`;
       } else {
-        // デフォルト (時間切れなどの場合) は中央付近
         el.style.left = '50%';
         el.style.top = '35%';
         el.style.transform = 'translateX(-50%)';
       }
-
+      
       el.classList.remove('hidden', 'animate-popUp');
       void el.offsetWidth;
       el.classList.add('animate-popUp');
@@ -622,7 +812,6 @@
       let hasHigh = false;
       const lowNotes = ['f3', 'g3', 'a3', 'b3'];
       const highNotes = ['d5', 'e5', 'f5', 'g5'];
-
       targetNotes.forEach(note => {
         if (lowNotes.includes(note.id)) hasLow = true;
         if (highNotes.includes(note.id)) hasHigh = true;
@@ -645,14 +834,13 @@
       let html = '';
       
       whiteKeys.forEach((keyId, i) => {
-        html += `<rect id="key-${keyId}" x="${i * W}" y="0" width="${W}" height="${svgHeight}" class="key-white cursor-pointer" fill="#FFF" stroke="#333" stroke-width="2" rx="4" onclick="handleGuess('${keyId}')" />`;
+        html += `<rect id="key-${keyId}" x="${i * W}" y="0" width="${W}" height="${svgHeight}" class="key-white cursor-pointer touch-none" fill="#FFF" stroke="#333" stroke-width="2" rx="4" onpointerdown="handleGuess('${keyId}', event)" />`;
       });
       
       const blackKeyWidth = W * 0.6;
       const blackKeyHeight = svgHeight * 0.55;
       whiteKeys.forEach((keyId, i) => {
         if (i === N - 1) return;
-        
         const baseNote = keyId.charAt(0);
         if (['c', 'd', 'f', 'g', 'a'].includes(baseNote)) {
           const bx = (i + 1) * W - blackKeyWidth / 2;
@@ -684,7 +872,6 @@
         const cy = svgHeight * 0.78;
         
         const shortLabel = note.label.replace('高い', '').replace('低い', '');
-
         g.innerHTML = `
           <circle cx="${cx}" cy="${cy}" r="${W * 0.35}" fill="${note.color}" stroke="#fff" stroke-width="3" filter="drop-shadow(0 4px 3px rgb(0 0 0 / 0.3))" />
           <text x="${cx}" y="${cy + W * 0.05}" font-size="${W * 0.3}" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">${shortLabel}</text>
@@ -697,6 +884,41 @@
         el.style.fill = '#FFF';
       });
     }
+
+    // === やり直すボタン・ポーズ機能 ===
+
+    window.showRetryModal = function() {
+      if (state.gameState !== 'playing') return;
+      state.isPaused = true;
+      state.pauseTime = Date.now();
+      document.getElementById('overlay-retry-modal').classList.remove('hidden');
+    }
+
+    window.hideRetryModal = function() {
+      document.getElementById('overlay-retry-modal').classList.add('hidden');
+      if (state.isPaused) {
+        state.isPaused = false;
+        // ポーズしていた時間分、開始時間をずらすことでポイントの減少を防ぐ
+        state.startTime += (Date.now() - state.pauseTime);
+        updatePointsDisplay();
+      }
+    }
+
+    window.retryGame = function() {
+      hideRetryModal();
+      stopBGM();
+      if(rAF_TimerId) cancelAnimationFrame(rAF_TimerId);
+      startGame(state.mode, state.stage);
+    }
+
+    window.returnToStageSelect = function() {
+      hideRetryModal();
+      stopBGM();
+      if(rAF_TimerId) cancelAnimationFrame(rAF_TimerId);
+      showTitleScreen();
+      showStageSelect(state.mode); // ステージ選択画面を開いた状態にする
+    }
+
 
     // === ゲームロジック ===
     function generateQuestions(mode, stage) {
@@ -753,11 +975,13 @@
           }
         }
       }
-      
       return list;
     }
 
     function updatePointsDisplay() {
+      // ポーズ中なら更新を止める
+      if (state.isPaused) return;
+
       if (state.gameState === 'playing' && state.showNote && state.feedback === null) {
         const elapsed = Date.now() - state.startTime;
         const nextPoints = Math.max(0, 1000 - Math.floor(elapsed / 10));
@@ -782,6 +1006,9 @@
       document.getElementById('overlay-title').classList.add('hidden');
       document.getElementById('overlay-result').classList.add('hidden');
       document.getElementById('overlay-allclear').classList.add('hidden');
+      
+      // やり直すボタンを表示
+      document.getElementById('btn-retry-container').classList.remove('hidden');
 
       state.mode = mode;
       state.stage = targetStage;
@@ -790,15 +1017,14 @@
       state.gameState = 'playing';
       state.feedback = null;
       state.showNote = false;
-
+      state.isPaused = false;
+      
       const stageDisplay = mode === 'range' ? `音域 ${state.stage}` : `Ch. ${state.stage}`;
       document.getElementById('ui-stage').innerText = stageDisplay;
-      
       updateScore(0);
       
       const stageNotesArr = mode === 'range' ? RANGE_STAGES[targetStage - 1] : CHALLENGE_STAGES[targetStage - 1];
       const targetNotes = stageNotesArr.map(id => ALL_NOTES[id]);
-
       state.questionList = generateQuestions(mode, targetStage);
       
       state.keyboardPattern = determineKeyboardPattern(targetNotes);
@@ -811,15 +1037,15 @@
       renderTargetNote(null);
       
       startBGM();
-
-      // 猫だけに「第何問！」と言わせる
       setCatMessage('第1問！');
-
+      
       setTimeout(() => {
+        // もしポーズされていたら表示処理を止めるなどの安全策（今回は1秒なので簡易的に）
+        if(state.gameState !== 'playing') return;
+
         state.currentNote = state.questionList[0];
         state.showNote = true;
         
-        // お題ボックスを表示して音名を出す
         document.getElementById('prompt-container').classList.remove('hidden');
         setPromptBox(state.currentNote.label, 'この音はどこ？', state.currentNote.color);
         setCatMessage('どこかな？');
@@ -830,19 +1056,21 @@
       }, 1000);
     }
 
-    window.handleGuess = function(keyId) {
-      if (state.gameState !== 'playing' || state.feedback !== null || !state.showNote) return;
+    window.handleGuess = function(keyId, event) {
+      if (event) {
+        event.preventDefault(); // タッチ時のスクロールやダブルタップの誤爆を防ぐ
+      }
+
+      if (state.gameState !== 'playing' || state.isPaused || state.feedback !== null || !state.showNote) return;
       
       const elapsed = Date.now() - state.startTime;
       const actualPoints = Math.max(0, 1000 - Math.floor(elapsed / 10));
       const isCorrect = keyId === state.currentNote.id;
-
+      
       state.feedback = isCorrect ? 'correct' : 'wrong';
-
       renderTargetNote(state.currentNote);
-
       const clickedKey = document.getElementById(`key-${keyId}`);
-
+      
       if (isCorrect) {
         playCorrectSound(ALL_NOTES[keyId]);
         state.score += actualPoints;
@@ -862,7 +1090,6 @@
         
         document.getElementById('prompt-box').classList.add('animate-shakePrompt');
       }
-
       scheduleNextQuestion();
     }
 
@@ -879,26 +1106,27 @@
 
     function scheduleNextQuestion() {
       setTimeout(() => {
+        if (state.gameState !== 'playing') return;
+
         if (state.questionCount >= 10) {
           showResultScreen();
         } else {
           state.questionCount++;
           state.feedback = null;
           state.showNote = false;
-
           document.getElementById('ui-added-score').classList.add('hidden');
           renderTargetNote(null);
           resetKeyboardColors();
           
-          // お題ボックスは隠し、猫にだけ喋らせる
           document.getElementById('prompt-container').classList.add('hidden');
           setCatMessage(`第${state.questionCount}問！`);
-
+          
           setTimeout(() => {
+            if (state.gameState !== 'playing') return;
+
             state.currentNote = state.questionList[state.questionCount - 1];
             state.showNote = true;
             
-            // お題ボックスを表示
             document.getElementById('prompt-container').classList.remove('hidden');
             setPromptBox(state.currentNote.label, 'この音はどこ？', state.currentNote.color);
             setCatMessage('どこかな？');
@@ -916,13 +1144,16 @@
       stopBGM();
       document.getElementById('keyboard-container').classList.add('hidden');
       document.getElementById('prompt-container').classList.add('hidden');
+      document.getElementById('btn-retry-container').classList.add('hidden');
       
+      // 今回のスコア結果をセーブ・ハイスコア更新
+      saveProgress(state.mode, state.stage, state.score);
+
       const elResult = document.getElementById('overlay-result');
       const elResultContent = document.getElementById('result-content');
       const elConfetti = document.getElementById('confetti-container');
       
       elResult.classList.remove('hidden');
-
       const clearScore = 8000;
       const superScore = 9000;
       
@@ -933,10 +1164,6 @@
       `;
       
       if (state.score >= clearScore) {
-        if (state.mode === 'challenge') {
-          saveProgress(state.stage + 1);
-        }
-
         let btnColor = '';
         if (state.score >= superScore) {
           playSuperFanfare();
@@ -954,14 +1181,12 @@
           html += `<p class="text-xl font-bold text-green-500 mb-6">目標の${clearScore}点達成！<br/>おめでとう！</p>`;
           btnColor = 'bg-green-500 hover:bg-green-600 border-b-4 border-green-700 shadow-[0_4px_0_#15803d] active:translate-y-[4px] active:shadow-none';
         }
-
         if (state.mode === 'range') {
           html += `<button class="w-full py-4 ${btnColor} text-white text-2xl font-bold rounded-xl transition-all" onclick="showTitleScreen()">タイトルへ戻る</button>`;
         } else {
           const btnText = state.stage < 12 ? '次のステージへ！' : 'エンディングへ！';
           html += `<button class="w-full py-4 ${btnColor} text-white text-2xl font-bold rounded-xl transition-all" onclick="handleNextStage()">${btnText}</button>`;
         }
-
       } else {
         playFailSound();
         elConfetti.classList.add('hidden');
@@ -990,7 +1215,6 @@
       document.getElementById('overlay-result').classList.add('hidden');
       const elAllClear = document.getElementById('overlay-allclear');
       elAllClear.classList.remove('hidden');
-
       const elConfetti = document.getElementById('allclear-confetti');
       elConfetti.innerHTML = Array.from({length: 150}).map(() => {
         const c = ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33F3', '#FFD700', '#FF1493', '#00FFFF'][Math.floor(Math.random() * 8)];
@@ -999,7 +1223,6 @@
       
       playSuperFanfare();
     }
-
   </script>
 </body>
 </html>
