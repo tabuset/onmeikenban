@@ -308,7 +308,7 @@
 
   <script type="module">
     // =========================================================
-    // 【先生向け設定】 Googleフォーム連携
+    // 【先生向け設定①】 Googleフォーム連携
     // =========================================================
     
     // 1. 作成したGoogleフォームのURL（最後が /viewform で終わるもの）
@@ -321,25 +321,22 @@
     const SECRET_KEY = "music_game_3_secret_key";
 
     // =========================================================
-    // 【システム設定】 Firebase (Googleログイン用)
-    // ※ ご自身のFirebaseプロジェクトの設定に書き換えてください
+    // 【先生向け設定②】 Firebase (Googleログイン用)
+    // ※Firebaseでプロジェクトを作成し、取得した設定をここに貼り付けてください。
+    // ※そのまま実行すると「api-key-not-valid」エラーになります。
     // =========================================================
+    const firebaseConfig = {
+  apiKey: "AIzaSyC_tWrjM9S72hhq8zCOR3MQFh9D8hElrWw",
+  authDomain: "music-quiz-e5e3a.firebaseapp.com",
+  projectId: "music-quiz-e5e3a",
+  storageBucket: "music-quiz-e5e3a.firebasestorage.app",
+  messagingSenderId: "481716595731",
+  appId: "1:481716595731:web:76338313f6f68534b9a3e6",
+  measurementId: "G-PYRV76B5CG"
+};
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-    let firebaseConfig;
-    if (typeof __firebase_config !== 'undefined') {
-      firebaseConfig = JSON.parse(__firebase_config);
-    } else {
-      firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
-      };
-    }
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
