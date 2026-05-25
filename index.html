@@ -52,6 +52,48 @@
 
   <div id="game-app" class="w-full max-w-3xl aspect-[4/3] relative overflow-hidden bg-[#87CEEB] rounded-xl shadow-2xl select-none">
     
+    <!-- === ログイン画面 (初期表示) === -->
+    <div id="login-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#a6e6ff]">
+      <div class="transform -rotate-6 animate-bounce mb-6">
+        <svg width="80" height="96" viewBox="0 0 120 150">
+          <path d="M 20 100 Q 0 120 10 140 Q 20 150 30 130 Q 40 110 30 90" fill="#FF8C00" stroke="#000" stroke-width="2"/>
+          <ellipse cx="60" cy="100" rx="30" ry="40" fill="#FF8C00" stroke="#000" stroke-width="2" transform="rotate(-15, 60, 100)" />
+          <ellipse cx="55" cy="105" rx="20" ry="30" fill="#FFF" transform="rotate(-15, 55, 105)" />
+          <rect x="40" y="130" width="15" height="20" rx="5" fill="#FF8C00" stroke="#000" stroke-width="2" />
+          <rect x="70" y="125" width="15" height="20" rx="5" fill="#FF8C00" stroke="#000" stroke-width="2" />
+          <path d="M 40 90 Q 20 80 30 70 Q 40 60 50 80" fill="#FF8C00" stroke="#000" stroke-width="2"/>
+          <path d="M 80 85 Q 100 70 95 60 Q 90 50 75 75" fill="#FF8C00" stroke="#000" stroke-width="2"/>
+          <ellipse cx="60" cy="50" rx="35" ry="30" fill="#FF8C00" stroke="#000" stroke-width="2" />
+          <polygon points="30,35 20,10 45,25" fill="#FF8C00" stroke="#000" stroke-width="2" />
+          <polygon points="90,35 100,10 75,25" fill="#FF8C00" stroke="#000" stroke-width="2" />
+          <ellipse cx="60" cy="55" rx="25" ry="18" fill="#FFF" />
+          <ellipse cx="45" cy="45" rx="8" ry="12" fill="#FFF" stroke="#000" stroke-width="2" />
+          <ellipse cx="75" cy="45" rx="8" ry="12" fill="#FFF" stroke="#000" stroke-width="2" />
+          <circle cx="48" cy="45" r="3" fill="#000" />
+          <circle cx="72" cy="45" r="3" fill="#000" />
+          <ellipse cx="60" cy="55" rx="4" ry="3" fill="#000" />
+          <path d="M 50 65 Q 60 75 70 65" fill="none" stroke="#000" stroke-width="2" />
+        </svg>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)] text-center stroke-text tracking-wider mb-10">音名⇒鍵盤クイズ</h1>
+      
+      <div class="bg-white p-8 rounded-3xl shadow-xl text-center max-w-sm w-full border-4 border-blue-400 mx-4 relative overflow-hidden">
+        <div id="login-loading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+          <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+        <p class="text-gray-700 font-bold mb-6">あそぶには Googleアカウント で<br>ログインしてね！</p>
+        <button onclick="loginWithGoogle()" class="w-full py-4 bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-700 text-lg font-bold rounded-xl shadow-[0_4px_0_#d1d5db] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-3">
+          <svg class="w-6 h-6" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Googleでログイン
+        </button>
+      </div>
+    </div>
+
     <!-- 背景の装飾 -->
     <div class="absolute bottom-16 left-0 right-0 h-40 flex items-end opacity-90 pointer-events-none">
       <div class="w-1/3 h-24 bg-green-500 rounded-t-[100px] -ml-8"></div>
@@ -141,12 +183,15 @@
     </div>
 
     <!-- タイトル画面 / ステージ選択画面 -->
-    <div id="overlay-title" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#a6e6ff] overflow-y-auto pt-20 pb-10">
+    <div id="overlay-title" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#a6e6ff] overflow-y-auto pt-20 pb-10 hidden">
       
       <!-- 名前の表示 -->
-      <div id="player-name-display" class="absolute top-4 right-4 bg-white/90 px-5 py-2 rounded-full shadow-md border-2 border-blue-300 text-blue-800 font-bold hidden z-50 flex items-center gap-2">
-        <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-        <span id="ui-player-name"></span> さん
+      <div id="player-name-display" class="absolute top-4 right-4 bg-white/90 pl-5 pr-2 py-1.5 rounded-full shadow-md border-2 border-blue-300 text-blue-800 font-bold z-50 flex items-center gap-2">
+        <div class="flex items-center gap-1 overflow-hidden max-w-[120px]">
+          <svg class="w-4 h-4 shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+          <span id="ui-player-name" class="truncate text-sm"></span>
+        </div>
+        <button onclick="logoutGoogle()" class="ml-1 text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 py-1 px-2 rounded-full transition-colors shrink-0">ログアウト</button>
       </div>
 
       <div class="flex items-center justify-center gap-2 mb-10 shrink-0 mt-8">
@@ -180,6 +225,7 @@
         </div>
       </div>
       
+      <!-- モード選択ボタン群 -->
       <div id="mode-select" class="w-full max-w-md flex flex-col gap-6 px-4 shrink-0">
         <button onclick="showStageSelect('range')" class="py-5 px-6 bg-blue-500 hover:bg-blue-400 text-white text-3xl font-bold rounded-2xl shadow-[0_8px_0_#1e40af] active:translate-y-[8px] active:shadow-none transition-all">
           音域モード
@@ -189,6 +235,15 @@
           チャレンジモード
           <span class="block text-sm font-normal mt-2 opacity-90">徐々に増える音に挑戦！（全12ステージ）</span>
         </button>
+      </div>
+
+      <!-- 成績送信ボタン (タイトル画面で常に表示) -->
+      <div id="form-submit-container" class="mt-8 flex flex-col items-center shrink-0">
+        <button onclick="sendToForm()" class="py-3 px-8 bg-green-500 hover:bg-green-400 text-white text-xl font-bold rounded-full shadow-[0_4px_0_#166534] active:translate-y-[4px] active:shadow-none transition-all flex items-center gap-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+          成績をフォームに送信
+        </button>
+        <p class="text-xs text-gray-700 mt-3 bg-white/60 px-3 py-1 rounded shadow-sm font-bold">※あなたのアカウントで送信されます</p>
       </div>
 
       <div id="stage-select-range" class="w-full max-w-lg hidden flex-col items-center px-4 pb-10 shrink-0">
@@ -203,8 +258,8 @@
         <button onclick="showTitleScreen()" class="py-3 px-8 bg-gray-500 hover:bg-gray-400 text-white text-xl font-bold rounded-full shadow-[0_4px_0_#374151] active:translate-y-[4px] active:shadow-none transition-all">タイトルへ戻る</button>
       </div>
 
-      <!-- データリセットボタン -->
-      <button id="btn-data-reset" onclick="showResetModal()" class="absolute bottom-4 right-4 text-blue-800/40 hover:text-red-500 text-xs font-bold transition-colors z-50 hidden underline underline-offset-2">データリセット</button>
+      <!-- データリセットボタン (スコアのみリセット) -->
+      <button id="btn-data-reset" onclick="showResetModal()" class="absolute bottom-4 right-4 text-blue-800/40 hover:text-red-500 text-xs font-bold transition-colors z-50 underline underline-offset-2">データを最初からにする</button>
     </div>
 
     <!-- リザルト画面 -->
@@ -225,20 +280,11 @@
 
     <!-- ========= モーダル群 (最前面 z-50) ========= -->
 
-    <!-- 名前入力モーダル -->
-    <div id="overlay-name-input" class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
-      <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-blue-400 mx-4">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">おなまえを おしえてね！</h2>
-        <input type="text" id="player-name-input" class="w-full text-center text-2xl p-3 border-2 border-gray-300 rounded-xl mb-6 focus:outline-none focus:border-blue-500" placeholder="なまえ" maxlength="10">
-        <button onclick="savePlayerName()" class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold rounded-xl shadow-[0_4px_0_#1d4ed8] active:translate-y-[4px] active:shadow-none transition-all">けってい！</button>
-      </div>
-    </div>
-
     <!-- データリセット確認モーダル -->
     <div id="overlay-reset-confirm" class="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
       <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full border-4 border-red-500 mx-4">
         <h2 class="text-2xl font-bold text-red-600 mb-4">ほんとうに データをけす？</h2>
-        <p class="text-gray-600 mb-6 font-bold">なまえも スコアも<br/>ぜんぶ きえちゃうよ！</p>
+        <p class="text-gray-600 mb-6 font-bold text-sm">これまでのスコアや<br/>クリアしたステージが<br/>ぜんぶ きえちゃうよ！</p>
         <div class="flex gap-4">
           <button onclick="hideResetModal()" class="flex-1 py-3 bg-gray-400 hover:bg-gray-500 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#4b5563] active:translate-y-[4px] active:shadow-none transition-all">やめる</button>
           <button onclick="resetData()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white text-lg font-bold rounded-xl shadow-[0_4px_0_#991b1b] active:translate-y-[4px] active:shadow-none transition-all">けす</button>
@@ -260,7 +306,45 @@
 
   </div>
 
-  <script>
+  <script type="module">
+    // =========================================================
+    // 【先生向け設定】 Googleフォーム連携
+    // =========================================================
+    
+    // 1. 作成したGoogleフォームのURL（最後が /viewform で終わるもの）
+    const FORM_URL = "https://docs.google.com/forms/d/e/ここにフォームのIDを入れてください/viewform";
+
+    // 2. フォーム内の「暗号化されたデータ」を自動入力させるためのエントリーID
+    const ENTRY_ID_DATA = "entry.987654321";
+
+    // 3. 暗号化用の秘密の鍵（スプレッドシート側にも全く同じ文字列を設定します）
+    const SECRET_KEY = "music_game_3_secret_key";
+
+    // =========================================================
+    // 【システム設定】 Firebase (Googleログイン用)
+    // ※ ご自身のFirebaseプロジェクトの設定に書き換えてください
+    // =========================================================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    let firebaseConfig;
+    if (typeof __firebase_config !== 'undefined') {
+      firebaseConfig = JSON.parse(__firebase_config);
+    } else {
+      firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+      };
+    }
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
     // === データの定義 ===
     const ALL_NOTES = {
       'f3': { id: 'f3', label: '低いファ', freq: 174.61, color: '#FB923C' },
@@ -312,8 +396,9 @@
     };
 
     const state = {
+      uid: null,
       playerName: null,
-      pendingMode: null,
+      playerEmail: null,
       mode: 'range',
       stage: 1,
       gameState: 'title',
@@ -336,23 +421,64 @@
     let bgmTimerId = null;
     let rAF_TimerId = null;
 
+    // === ログイン状態の監視 ===
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // ログイン成功時
+        document.getElementById('login-loading').classList.add('hidden');
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('overlay-title').classList.remove('hidden');
+        
+        state.uid = user.uid;
+        state.playerName = user.displayName || user.email.split('@')[0];
+        state.playerEmail = user.email || "unknown@example.com";
+        document.getElementById('ui-player-name').innerText = state.playerName;
+        
+        loadProgress(); // UIDに基づくデータをロード
+        initStageSelectUI();
+        window.showTitleScreen();
+      } else {
+        // 未ログイン時
+        document.getElementById('login-loading').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('overlay-title').classList.add('hidden');
+        document.getElementById('keyboard-container').classList.add('hidden');
+        document.getElementById('prompt-container').classList.add('hidden');
+        document.getElementById('overlay-result').classList.add('hidden');
+      }
+    });
+
+    window.loginWithGoogle = function() {
+      document.getElementById('login-loading').classList.remove('hidden');
+      signInWithPopup(auth, provider).catch(error => {
+        console.error(error);
+        document.getElementById('login-loading').classList.add('hidden');
+        alert("ログインに失敗しました。詳細: " + error.message);
+      });
+    };
+
+    window.logoutGoogle = function() {
+      if (confirm("ログアウトしますか？")) {
+        signOut(auth);
+      }
+    };
+
     // === セーブデータ管理 ===
-    const SAVE_KEY = 'oto_to_key_save_xT9v2KkL5p'; 
+    function getSaveKey() {
+      return 'oto_to_key_save_xT9v2KkL5p_' + state.uid;
+    }
 
     function loadProgress() {
       try {
-        const saved = localStorage.getItem(SAVE_KEY);
+        const saved = localStorage.getItem(getSaveKey());
         if (saved) {
           const data = JSON.parse(saved);
-          if (data.playerName) state.playerName = data.playerName;
           if (data.maxUnlockedChallenge) state.maxUnlockedChallenge = data.maxUnlockedChallenge;
           if (data.highScores) state.highScores = data.highScores;
         } else {
-          // 旧バージョンのデータ引き継ぎ
-          const oldSaved = localStorage.getItem('oto-to-key-progress');
-          if (oldSaved) {
-            state.maxUnlockedChallenge = parseInt(oldSaved, 10);
-          }
+          // 初期化
+          state.maxUnlockedChallenge = 1;
+          state.highScores = {};
         }
       } catch (e) {
         console.warn("セーブデータの読み込みに失敗しました", e);
@@ -361,12 +487,11 @@
 
     function saveFullProgress() {
       const dataToSave = {
-        playerName: state.playerName,
         maxUnlockedChallenge: state.maxUnlockedChallenge,
         highScores: state.highScores
       };
       try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
+        localStorage.setItem(getSaveKey(), JSON.stringify(dataToSave));
       } catch (e) {
         console.warn("セーブデータの保存に失敗しました", e);
       }
@@ -374,8 +499,6 @@
 
     function saveProgress(mode, stage, score) {
       let shouldSave = false;
-
-      // ハイスコアの更新
       const key = `${mode}_${stage}`;
       const currentHigh = state.highScores[key] || 0;
       if (score > currentHigh) {
@@ -383,7 +506,6 @@
         shouldSave = true;
       }
 
-      // チャレンジモードで8000点以上なら次のステージをアンロック
       if (mode === 'challenge' && score >= 8000) {
         const nextStage = stage + 1;
         if (nextStage > state.maxUnlockedChallenge && nextStage <= 12) {
@@ -397,60 +519,7 @@
       }
     }
 
-    // === 初期化・名前入力・リセット ===
-
-    window.onload = () => {
-      loadProgress();
-      initStageSelectUI();
-      showTitleScreen();
-
-      if (state.playerName) {
-        updateNameDisplay();
-      }
-    };
-
-    function showNameInput() {
-      document.getElementById('overlay-name-input').classList.remove('hidden');
-      const input = document.getElementById('player-name-input');
-      input.value = '';
-      input.focus();
-      
-      input.onkeydown = (e) => {
-        if (e.key === 'Enter') savePlayerName();
-      };
-    }
-
-    window.savePlayerName = function() {
-      const input = document.getElementById('player-name-input');
-      const name = input.value.trim();
-      if (name) {
-        state.playerName = name;
-        saveFullProgress();
-        document.getElementById('overlay-name-input').classList.add('hidden');
-        updateNameDisplay();
-        
-        if (state.pendingMode) {
-          const modeToOpen = state.pendingMode;
-          state.pendingMode = null;
-          showStageSelect(modeToOpen);
-        }
-      } else {
-        input.classList.add('animate-shakePrompt');
-        setTimeout(() => input.classList.remove('animate-shakePrompt'), 500);
-      }
-    }
-
-    function updateNameDisplay() {
-      if (state.playerName) {
-        document.getElementById('ui-player-name').innerText = state.playerName;
-        document.getElementById('player-name-display').classList.remove('hidden');
-        document.getElementById('btn-data-reset').classList.remove('hidden');
-      } else {
-        document.getElementById('player-name-display').classList.add('hidden');
-        document.getElementById('btn-data-reset').classList.add('hidden');
-      }
-    }
-
+    // === データリセット ===
     window.showResetModal = function() {
       document.getElementById('overlay-reset-confirm').classList.remove('hidden');
     }
@@ -460,18 +529,15 @@
     }
 
     window.resetData = function() {
-      localStorage.removeItem(SAVE_KEY);
-      state.playerName = null;
+      localStorage.removeItem(getSaveKey());
       state.maxUnlockedChallenge = 1;
       state.highScores = {};
       
       hideResetModal();
-      updateNameDisplay();
-      showTitleScreen(); // リセット後はタイトル画面に戻る（名前はすぐには聞かない）
+      window.showTitleScreen(); 
     }
 
     // === UI構築関連 ===
-
     function getClearMark(mode, stage) {
       const key = `${mode}_${stage}`;
       const score = state.highScores[key] || 0;
@@ -534,6 +600,7 @@
       initStageSelectUI();
       document.getElementById('overlay-title').classList.remove('hidden');
       document.getElementById('mode-select').classList.remove('hidden');
+      document.getElementById('form-submit-container').classList.remove('hidden');
       document.getElementById('stage-select-range').classList.add('hidden');
       document.getElementById('stage-select-challenge').classList.add('hidden');
       document.getElementById('overlay-result').classList.add('hidden');
@@ -548,13 +615,9 @@
     }
 
     window.showStageSelect = function(mode) {
-      if (!state.playerName) {
-        state.pendingMode = mode;
-        showNameInput();
-        return;
-      }
-
       document.getElementById('mode-select').classList.add('hidden');
+      document.getElementById('form-submit-container').classList.add('hidden');
+
       if (mode === 'range') {
         document.getElementById('stage-select-range').classList.remove('hidden');
         document.getElementById('stage-select-challenge').classList.add('hidden');
@@ -562,6 +625,54 @@
         document.getElementById('stage-select-challenge').classList.remove('hidden');
         document.getElementById('stage-select-range').classList.add('hidden');
       }
+    }
+
+    // ==========================================
+    // フォームへのデータ送信と暗号化処理
+    // ==========================================
+    window.sendToForm = function() {
+      if (!state.uid) {
+        alert("ログインしていません。");
+        return;
+      }
+
+      // 1. 点数データを配列にまとめる
+      // 形式: [ゲーム番号, メールアドレス, 名前, 音域1〜5, チャレンジ1〜12]
+      let dataArr = [3, state.playerEmail, state.playerName];
+      
+      for(let i=1; i<=5; i++) {
+        dataArr.push(state.highScores[`range_${i}`] || 0);
+      }
+      for(let i=1; i<=12; i++) {
+        dataArr.push(state.highScores[`challenge_${i}`] || 0);
+      }
+      
+      // 2. カンマ区切りの文字列にする
+      const dataStr = dataArr.join(',');
+      
+      // 3. 改ざん防止用のチェックサム（文字コードの合計）を計算
+      let checksum = 0;
+      for(let i=0; i<dataStr.length; i++) {
+        checksum += dataStr.charCodeAt(i);
+      }
+      
+      // 末尾に | と一緒にくっつける
+      const finalStr = dataStr + '|' + checksum;
+      
+      // 4. 秘密鍵でXOR暗号化
+      let encrypted = "";
+      for(let i=0; i<finalStr.length; i++) {
+        encrypted += String.fromCharCode(finalStr.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
+      }
+      
+      // 5. URLで送れるようにBase64エンコード
+      const encodedData = encodeURIComponent(btoa(encrypted));
+      
+      // 6. フォームのURLを生成して開く
+      // ※名前は暗号データの中に含めたので、安全のためURLパラメータで直接送るのは暗号データのみにします
+      const url = `${FORM_URL}?${ENTRY_ID_DATA}=${encodedData}`;
+      
+      window.open(url, '_blank');
     }
 
     // === オーディオ関連 ===
@@ -908,15 +1019,15 @@
       hideRetryModal();
       stopBGM();
       if(rAF_TimerId) cancelAnimationFrame(rAF_TimerId);
-      startGame(state.mode, state.stage);
+      window.startGame(state.mode, state.stage);
     }
 
     window.returnToStageSelect = function() {
       hideRetryModal();
       stopBGM();
       if(rAF_TimerId) cancelAnimationFrame(rAF_TimerId);
-      showTitleScreen();
-      showStageSelect(state.mode); // ステージ選択画面を開いた状態にする
+      window.showTitleScreen();
+      window.showStageSelect(state.mode); // ステージ選択画面を開いた状態にする
     }
 
 
@@ -1204,7 +1315,7 @@
     window.handleNextStage = function() {
       if (state.mode === 'challenge') {
         if (state.stage < 12) {
-          startGame('challenge', state.stage + 1);
+          window.startGame('challenge', state.stage + 1);
         } else {
           showAllClearScreen();
         }
